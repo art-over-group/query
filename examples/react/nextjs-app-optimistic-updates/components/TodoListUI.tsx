@@ -6,21 +6,21 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from '@tanstack/react-query'
-import { addTodo, todosQueryOptions } from '@/app/todos'
+import { todosMutations, todosQueries } from '../services/todos/queries'
 
 export default function TodoListUI() {
   const queryClient = useQueryClient()
   const [inputValue, setInputValue] = useState('')
 
-  const { data: todos } = useSuspenseQuery(todosQueryOptions)
+  const { data: todos } = useSuspenseQuery(todosQueries.list())
 
   const addTodoMutation = useMutation({
-    mutationFn: addTodo,
+    ...todosMutations.create(),
     onSettled: () =>
-      queryClient.invalidateQueries({ queryKey: todosQueryOptions.queryKey }),
+      queryClient.invalidateQueries({ queryKey: todosQueries.list().queryKey }),
   })
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
     const text = inputValue.trim()
     if (!text) return
